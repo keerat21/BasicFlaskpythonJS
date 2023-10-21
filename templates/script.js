@@ -6,12 +6,19 @@ const processedText = document.getElementById("processed-text");
 processBtn.addEventListener("click", async () => {
   const text = inputText.value;
   const text2 = inputText2.value;
+
+  // Create an object with both text inputs
+  const data = {
+    text: text,
+    text2: text2
+  };
+
   const response = await fetch("http://localhost:8080/process", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({text: [text, text2]})
+    body: JSON.stringify(data) // Send the data object as JSON
   })
     .then(response => response.json())
     .then(data => {

@@ -1,17 +1,16 @@
 import logging
-from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS  # Import the CORS extension
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 from textblob import TextBlob
 
-
 app = Flask(__name__)
-CORS(app, origins="http://localhost:8081")
- # Initialize CORS with your Flask app
+
+# Initialize CORS with options
+cors = CORS(app, resources={r"/process": {"origins": "http://localhost:8081"}})
 
 # Set up the logging configuration
-logging.basicConfig(level=logging.DEBUG)  # Set the logging level to DEBUG
-
+logging.basicConfig(level=logging.DEBUG)
 
 @app.route('/')
 def index():
@@ -20,9 +19,8 @@ def index():
 @app.route('/process', methods=['POST'])
 def process():
     data = request.get_json()
-    print("Received data:", data)  # Add this logging statement
-    print("number", len(data))  # size
-    text = data[text][1]
+    print("Received data:", data)
+    text = data['text']  # Correct the way you access the text data
 
     # Perform sentiment analysis using TextBlob
     analysis = TextBlob(text)
@@ -45,12 +43,11 @@ def process():
         }
     }
 
-        # Log the result
+    # Log the result
     logging.debug(f"Processed text: {result}")
 
     # Return the response with 'utf-8' charset specified
     response = jsonify({'result': result})
-
     response.headers['Content-Type'] = 'application/json; charset=utf-8'
     response.headers['Cache-Control'] = 'no-cache'
     return response
